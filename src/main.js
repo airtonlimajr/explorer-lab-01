@@ -66,7 +66,7 @@ const cardNumberPattern = {
     },
     {
       mask: "0000 0000 0000 0000",
-      regex: /(^5 [1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
+      regex: /(^5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
       cardtype: "mastercard",
     },
     {
@@ -76,12 +76,63 @@ const cardNumberPattern = {
   ],
 
   dispatch: function (appended, dynamicMasked) {
-    const number = (dynamicMasked.value + appended).replace(/\D/g, "")
+    const number = (dynamicMasked.value + appended).replace(/\D/g, "");
     const foundMask = dynamicMasked.compiledMasks.find(function (item) {
-      return number.match(item.regex)
-    })
-    return foundMask
+      return number.match(item.regex);
+    });
+    return foundMask;
   },
-}
+};
 
 const cardNumberMasked = IMask(cardNumber, cardNumberPattern);
+
+const addButton = document.querySelector("#add-button");
+
+addButton.addEventListener("click", () => {
+  console.log("opa vc clicou");
+});
+
+document.querySelector("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+});
+
+const cardHolder = document.querySelector("#card-holder");
+cardHolder.addEventListener("input", () => {
+  const ccHolder = document.querySelector(".cc-holder .value");
+
+  ccHolder.innerText =
+    cardHolder.value.length === 0 ? "FULANO DA SILVA" : cardHolder.value;
+});
+
+securityCodeMask.on("accept", () => {
+  updateSecurityCode(securityCodeMask.value);
+});
+
+function updateSecurityCode(code) {
+  const ccSecutiry = document.querySelector(".cc-security .value");
+
+  ccSecutiry.innerText = code.length === 0 ? "123" : code;
+}
+
+cardNumberMasked.on("accept", () => {
+  const cardType = cardNumberMasked.masked.currentMask.cardtype;
+  setCardType(cardType);
+  updateCardNumber(cardNumberMasked.value);
+});
+
+function updateCardNumber(number) {
+  const ccNumber = document.querySelector(".cc-number");
+
+  ccNumber.innerText = number.length === 0 ? "1234 5678 9012 3456" : number;
+}
+
+expirationDateMask.on("accept", () => {
+  updateExpirationDate(expirationDateMask.value);
+});
+
+
+function updateExpirationDate(date) {
+  const ccDate = document.querySelector(".cc-extra .value");
+
+  ccDate.innerText = date.length === 0 ? "02/32" : date;
+} 
